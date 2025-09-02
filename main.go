@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"database/sql"
 	"fmt"
 	"log"
@@ -9,9 +8,9 @@ import (
 	"os"
 
 	"github.com/cenkalti/backoff/v4"
-	"github.com/cockroachdb/cockroach-go/v2/crdb"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	_ "github.com/lib/pq"
 )
 
 func main() {
@@ -53,20 +52,17 @@ type Message struct {
 
 func initStore() (*sql.DB, error) {
 
-	pgConnString := fmt.Sprintf("host=%s port=%s dbname=%s user=%s password=%s sslmode=disable",
-		os.Getenv("PGHOST"),
-		os.Getenv("PGPORT"),
-		os.Getenv("PGDATABASE"),
-		os.Getenv("PGUSER"),
-		os.Getenv("PGPASSWORD"),
-	)
+	fmt.Println("Connecting...")
+
+	postgresInfo := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
+		"postgres", 5432, "myuser", "mypassword", "mydb")
 
 	var (
 		db  *sql.DB
 		err error
 	)
 	openDB := func() error {
-		db, err = sql.Open("postgres", pgConnString)
+		db, err = sql.Open("postgres", postgresInfo)
 		return err
 	}
 
@@ -75,10 +71,20 @@ func initStore() (*sql.DB, error) {
 		return nil, err
 	}
 
-	if _, err := db.Exec(
-		"CREATE TABLE IF NOT EXISTS message (value TEXT PRIMARY KEY)"); err != nil {
+	fmt.Println("Connected:")
+	_, err = db.Exec(`DROP TABLE IF EXISTS COMPANY;`)
+	if err != nil {
+		log.Fatalf("Error dropping table COMPANY: %s", err)
 		return nil, err
 	}
+
+	_, err = db.Exec(`CREATE TABLE COMPANY (ID INT PRIMARY KEY NOT NULL, NAME text);`)
+	if err != nil {
+		log.Fatalf("Error creating table COMPANY: %s", err)
+		return nil, err
+	}
+
+	fmt.Println("Table COMPANY is created.")
 
 	return db, nil
 }
@@ -99,21 +105,52 @@ func sendHandler(db *sql.DB, c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 
-	err := crdb.ExecuteTx(context.Background(), db, nil,
-		func(tx *sql.Tx) error {
-			_, err := tx.Exec(
-				"INSERT INTO message (value) VALUES ($1) ON CONFLICT (value) DO UPDATE SET value = excluded.value",
-				m.Value,
-			)
-			if err != nil {
-				return c.JSON(http.StatusInternalServerError, err)
-			}
-			return nil
-		})
-
+	tx, err := db.Begin()
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
+
+	// Defer a rollback in case of an error
+	defer func() {
+		if err := recover(); err != nil {
+			tx.Rollback()
+		}
+	}()
+
+	stmt, err := tx.Prepare("INSERT INTO message (value) VALUES ($1) ON CONFLICT (value) DO UPDATE SET value = excluded.value")
+	if err != nil {
+		tx.Rollback()
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(m.Value)
+	if err != nil {
+		tx.Rollback()
+		return c.JSON(http.StatusInternalServerError, err)
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err)
+	}
+
+	/*
+		err := db.ExecuteTx(context.Background(), db, nil,
+			func(tx *sql.Tx) error {
+				_, err := tx.Exec(
+					"INSERT INTO message (value) VALUES ($1) ON CONFLICT (value) DO UPDATE SET value = excluded.value",
+					m.Value,
+				)
+				if err != nil {
+					return c.JSON(http.StatusInternalServerError, err)
+				}
+				return nil
+			})
+
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, err)
+		}
+	*/
 
 	return c.JSON(http.StatusOK, m)
 }

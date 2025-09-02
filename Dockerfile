@@ -2,30 +2,23 @@
 ## Build
 ##
 
-FROM golang:1.16-buster AS build
+FROM golang:1.24.6 AS build
 
 WORKDIR /app
 
 COPY go.mod .
 COPY go.sum .
+
 RUN go mod download
 
+# Copy everything from this project into the filesystem of the container.
 COPY *.go ./
 
-RUN go build -o /docker-gs-ping-roach
+# Obtain the package needed to run code. Alternatively use GO modules.
+RUN go get -u github.com/lib/pq
 
-##
-## Deploy
-##
-
-FROM gcr.io/distroless/base-debian10
-
-WORKDIR /
-
-COPY --from=build /docker-gs-ping-roach /docker-gs-ping-roach
+RUN go build -o /interactions
 
 EXPOSE 8080
 
-USER nonroot:nonroot
-
-ENTRYPOINT ["/docker-gs-ping-roach"]
+ENTRYPOINT ["/interactions"]
