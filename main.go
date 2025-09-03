@@ -72,13 +72,16 @@ func initStore() (*sql.DB, error) {
 	}
 
 	fmt.Println("Connected:")
-	_, err = db.Exec(`DROP TABLE IF EXISTS COMPANY;`)
-	if err != nil {
-		log.Fatalf("Error dropping table COMPANY: %s", err)
-		return nil, err
-	}
 
-	_, err = db.Exec(`CREATE TABLE COMPANY (ID INT PRIMARY KEY NOT NULL, NAME text);`)
+	/*
+		_, err = db.Exec(`DROP TABLE IF EXISTS COMPANY;`)
+		if err != nil {
+			log.Fatalf("Error dropping table COMPANY: %s", err)
+			return nil, err
+		}
+	*/
+
+	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS COMPANY (ID SERIAL PRIMARY KEY, value text);`)
 	if err != nil {
 		log.Fatalf("Error creating table COMPANY: %s", err)
 		return nil, err
@@ -117,14 +120,17 @@ func sendHandler(db *sql.DB, c echo.Context) error {
 		}
 	}()
 
-	stmt, err := tx.Prepare("INSERT INTO message (value) VALUES ($1) ON CONFLICT (value) DO UPDATE SET value = excluded.value")
+	//stmt, err := tx.Prepare("INSERT INTO COMPANY (value) VALUES ($1) ON CONFLICT (value) DO UPDATE SET value = excluded.value")
+	stmt, err := tx.Prepare("INSERT INTO COMPANY (value) VALUES ($1)")
 	if err != nil {
+		log.Fatalf("Error preparing insert statement: %s", err)
 		tx.Rollback()
 	}
 	defer stmt.Close()
 
 	_, err = stmt.Exec(m.Value)
 	if err != nil {
+		log.Fatalf("Error executing insert statement : %s", err)
 		tx.Rollback()
 		return c.JSON(http.StatusInternalServerError, err)
 	}
@@ -157,7 +163,7 @@ func sendHandler(db *sql.DB, c echo.Context) error {
 
 func countRecords(db *sql.DB) (int, error) {
 
-	rows, err := db.Query("SELECT COUNT(*) FROM message")
+	rows, err := db.Query("SELECT COUNT(*) FROM COMPANY")
 	if err != nil {
 		return 0, err
 	}
