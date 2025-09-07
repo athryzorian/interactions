@@ -13,6 +13,7 @@ import (
 
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
+	"google.golang.org/api/idtoken"
 
 	"github.com/cenkalti/backoff/v4"
 	"github.com/labstack/echo/v4"
@@ -20,10 +21,15 @@ import (
 	_ "github.com/lib/pq"
 )
 
+const (
+	oauthGoogleUrlAPI = "https://accounts.google.com/o/oauth2/v2/auth"
+	clientID          = "171559914291-q2rsnsoeae3u90ptc7hn3pe6hud7aru2.apps.googleusercontent.com"
+)
+
 // Scopes: OAuth 2.0 scopes provide a way to limit the amount of access that is granted to an access token.
 var googleOauthConfig = &oauth2.Config{
 	RedirectURL:  "http://localhost:8000/auth/google/callback",
-	ClientID:     "171559914291-q2rsnsoeae3u90ptc7hn3pe6hud7aru2.apps.googleusercontent.com",
+	ClientID:     clientID,
 	ClientSecret: "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",
 	Scopes: []string{
 		"https://www.googleapis.com/auth/userinfo.email",
@@ -34,10 +40,6 @@ var googleOauthConfig = &oauth2.Config{
 type Message struct {
 	Value string `json:"value"`
 }
-
-const (
-	oauthGoogleUrlAPI = "https://accounts.google.com/o/oauth2/v2/auth"
-)
 
 func main() {
 
@@ -60,8 +62,16 @@ func main() {
 		return oauthGoogleLogin(c.Response().Writer, c.Request())
 	})
 
-	e.POST("/login", func(c echo.Context) error {
-		return loginHandler(c)
+	e.POST("/auth/signin", func(c echo.Context) error {
+		return signInwithHandler(c)
+	})
+
+	e.POST("/auth/signup", func(c echo.Context) error {
+		return signUpWithHandler(c)
+	})
+
+	e.POST("/auth/use", func(c echo.Context) error {
+		return continueWithHandler(c)
 	})
 
 	e.GET("/auth/google/callback", func(c echo.Context) error {
@@ -84,9 +94,70 @@ func main() {
 	e.Logger.Fatal(e.Start(":" + httpPort))
 }
 
-func loginHandler(c echo.Context) error {
-	fmt.Println("Login Handler")
-	return c.HTML(http.StatusOK, `<html><body><a href="/auth/google/login">Backed received login call after successful Google Login.</a></body></html>`)
+func signInwithHandler(c echo.Context) error {
+
+	fmt.Println("Sign In With Handler")
+	var request = c.Request()
+	request.ParseForm()
+	var loginUserCredential = request.FormValue("credential")
+	fmt.Println("Login User Credential:", loginUserCredential)
+	// Validate the JWT token and get the user info.
+	// https://developers.google.com/identity/gsi/web/guides/verify-google-id-token
+	// https://pkg.go.dev/github.com/googleapis/google-api-go-client/idtoken#Validate
+
+	idTokenValidator, err := idtoken.NewValidator(context.Background())
+	if err != nil {
+		log.Fatalf("Error creating ID token validator: %s", err)
+		return c.HTML(http.StatusInternalServerError, err.Error())
+	}
+
+	payload, err := idTokenValidator.Validate(context.Background(), loginUserCredential, clientID)
+	if err != nil {
+		log.Fatalf("Error validating ID token: %s", err)
+		return c.HTML(http.StatusInternalServerError, err.Error())
+	}
+
+	issuer := payload.Issuer
+	audience := payload.Audience
+	expires := payload.Expires
+	issuedAt := payload.IssuedAt
+	userID := payload.Subject
+
+	fmt.Printf("Issuer: %s\n", issuer)
+	fmt.Printf("Audience: %s\n", audience)
+	fmt.Printf("Expires At: %d\n", expires)
+	fmt.Printf("Issued At: %d\n", issuedAt)
+	fmt.Printf("User ID: %s\n", userID)
+
+	// email := payload.Claims["email"]
+	// emailVerified := payload.Claims["email_verified"]
+	// issuer := payload.Claims["Issuer"]
+
+	// fmt.Printf("User ID: %s\n", userID)
+	// fmt.Printf("Email: %s\n", email)
+	// fmt.Printf("Email Verified: %v\n", emailVerified)
+	// fmt.Printf("Issuer: %v\n", issuer)
+
+	// You can use this user information to create a session or perform other actions as needed.
+
+	// For demonstration purposes, we just return a success message.
+
+	return c.HTML(http.StatusOK, `<html><body>Backend -> Sign In with handler called after successful Google Login.</body></html>`)
+
+}
+
+func signUpWithHandler(c echo.Context) error {
+
+	fmt.Println("Sign Up With Handler")
+	return c.HTML(http.StatusOK, `<html><body>Backend -> Sign Up with handler called after successful Google Sign up.</body></html>`)
+
+}
+
+func continueWithHandler(c echo.Context) error {
+
+	fmt.Println("Sign Up With Handler")
+	return c.HTML(http.StatusOK, `<html><body>Backend -> Continue with handler called after successful Google login.</body></html>`)
+
 }
 
 func oauthGoogleLogin(w http.ResponseWriter, r *http.Request) error {
