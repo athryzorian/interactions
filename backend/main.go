@@ -47,6 +47,7 @@ func main() {
 
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+	e.Use(middleware.CORS())
 
 	db, err := initStore()
 	if err != nil {
@@ -101,6 +102,7 @@ func signInwithHandler(c echo.Context) error {
 	request.ParseForm()
 	var loginUserCredential = request.FormValue("credential")
 	fmt.Println("Login User Credential:", loginUserCredential)
+
 	// Validate the JWT token and get the user info.
 	// https://developers.google.com/identity/gsi/web/guides/verify-google-id-token
 	// https://pkg.go.dev/github.com/googleapis/google-api-go-client/idtoken#Validate
