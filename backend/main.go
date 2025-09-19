@@ -253,13 +253,13 @@ func initStore() (*sql.DB, error) {
 		}
 	*/
 
-	_, err = db.Exec(`CREATE TABLE IF NOT EXISTS COMPANY (ID SERIAL PRIMARY KEY, value text);`)
-	if err != nil {
-		log.Fatalf("Error creating table COMPANY: %s", err)
-		return nil, err
-	}
+	// _, err = db.Exec(`CREATE TABLE IF NOT EXISTS COMPANY (ID SERIAL PRIMARY KEY, value text);`)
+	// if err != nil {
+	// 	log.Fatalf("Error creating table COMPANY: %s", err)
+	// 	return nil, err
+	// }
 
-	fmt.Println("Table COMPANY is created.")
+	// fmt.Println("Table COMPANY is created.")
 
 	return db, nil
 }
