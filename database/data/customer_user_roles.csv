@@ -1,0 +1,3 @@
+role,description
+Customer Manager,Primary person at customer's end with maximum privilege that a customer can possibly have from App's customer facing functionality perspective.
+Customer User,A user at customer's end with limited privileges to customer facing features.

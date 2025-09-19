@@ -1,0 +1,5 @@
+role,description
+Business Admin,Admin who has privileges related to managing App functionalities / features and data for the organization.
+Business Manager,"A senior person, typically owner who has access to all of the functionality in this App (except some IT sensitive features e.g. data purging etc.)."
+Business Supervisor,A person who works for Business Owner and has privileges for a particular team / business unit / functionalities of this App.
+Business User,A standard user with regular privileges to features and functionalities needed for day-to-day use.

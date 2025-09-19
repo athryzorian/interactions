@@ -1,0 +1,16 @@
+name,abbreviation,logo,is_enabled,description
+IT Products / Services,IT,,f,A software development company who sells software products / services.
+Doctor,DR,,f,A medical practitioner who provides consulting services to patients.
+Architect / Interior decorator,AR,,f,Provides designs and/or execution for construction / renovation / beautification work.
+Hardware / software provider,HWSW,,f,"Supplies computing and other electronic hardware, software, license etc."
+Lawyer,LAW,,f,Provides legal advise and services to clients.
+Photographer,PH,,f,"Provides photography, video making services for events and occasions."
+Digital Content Provider,DC,,f,"Provides website, digital marketing content creation / publication services."
+Freelancer,FL,,f,Provides freelancing services.
+Property owner / manager,PM,,f,Performs / co-ordinates activities related to letting out a property.
+Food services provider,FS,,f,Provides food services / items on demand.
+Laundry services provider,LS,,f,"Provides laundry services, washing, ironing, dry-cleaning, pick-up / delivery of clothes etc."
+Dairy services provider,DS,,f,Provides milk and related products to households / businesses.
+Newspaper services provider,NS,,f,Provides newspapers / magazines to households / businesses.
+Chartered Accountant,CA,,f,"Provides accounting, audits, taxation, company formation and related services."
+Tutor / coach / trainer,TR,,t,Provides teaching / coaching to students for course(s) and/or exam(s).
