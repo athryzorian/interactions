@@ -31,6 +31,29 @@ CREATE SEQUENCE IF NOT EXISTS public.countries_id_seq
     MAXVALUE 2147483647
     CACHE 1;
 
+-- SEQUENCE: public.states_id_seq
+
+-- DROP SEQUENCE IF EXISTS public.states_id_seq;
+
+CREATE SEQUENCE IF NOT EXISTS public.states_id_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 2147483647
+    CACHE 1;
+
+
+-- SEQUENCE: public.cities_id_seq
+
+-- DROP SEQUENCE IF EXISTS public.cities_id_seq;
+
+CREATE SEQUENCE IF NOT EXISTS public.cities_id_seq
+    INCREMENT 1
+    START 1
+    MINVALUE 1
+    MAXVALUE 2147483647
+    CACHE 1;
+
 -- SEQUENCE: public.customer_user_id_seq
 
 -- DROP SEQUENCE IF EXISTS public.customer_user_id_seq;

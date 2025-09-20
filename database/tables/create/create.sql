@@ -125,6 +125,49 @@ TABLESPACE pg_default;
 ALTER TABLE IF EXISTS public.countries
     OWNER to myuser;
 
+-- Table: public.states
+
+-- DROP TABLE IF EXISTS public.states;
+
+CREATE TABLE IF NOT EXISTS public.states
+(
+    id integer NOT NULL DEFAULT nextval('states_id_seq'::regclass),
+    name character varying COLLATE pg_catalog."default" NOT NULL,
+    abbreviation character varying COLLATE pg_catalog."default" NOT NULL,
+    parent_country integer NOT NULL,
+    CONSTRAINT states_pkey PRIMARY KEY (id),
+    CONSTRAINT parent_country FOREIGN KEY (parent_country)
+        REFERENCES public.countries (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.states
+    OWNER to myuser;
+
+-- Table: public.cities
+
+-- DROP TABLE IF EXISTS public.cities;
+
+CREATE TABLE IF NOT EXISTS public.cities
+(
+    id integer NOT NULL DEFAULT nextval('cities_id_seq'::regclass),
+    name character varying COLLATE pg_catalog."default" NOT NULL,
+    parent_state integer NOT NULL,
+    CONSTRAINT cities_pkey PRIMARY KEY (id),
+    CONSTRAINT parent_state FOREIGN KEY (parent_state)
+        REFERENCES public.states (id) MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public.cities
+    OWNER to myuser;
+
 -- Table: public.customer_user_roles
 
 -- DROP TABLE IF EXISTS public.customer_user_roles;

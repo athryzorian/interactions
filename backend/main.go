@@ -19,6 +19,8 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	_ "github.com/lib/pq"
+
+	"dal/operations"
 )
 
 const (
@@ -80,6 +82,18 @@ func main() {
 	})
 
 	e.GET("/ping", func(c echo.Context) error {
+		return c.JSON(http.StatusOK, struct{ Status string }{Status: "OK"})
+	})
+
+	e.GET("/countries", func(c echo.Context) error {
+		countries, err := operations.ListCountries(db)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, err)
+		}
+		return c.JSON(http.StatusOK, countries)
+	})
+
+	e.GET("/countries", func(c echo.Context) error {
 		return c.JSON(http.StatusOK, struct{ Status string }{Status: "OK"})
 	})
 

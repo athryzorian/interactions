@@ -28,6 +28,26 @@ ALTER SEQUENCE public.countries_id_seq
 ALTER SEQUENCE public.countries_id_seq
     OWNER TO myuser;
 
+-- SEQUENCE: public.states_id_seq
+
+-- DROP SEQUENCE IF EXISTS public.states_id_seq;
+
+ALTER SEQUENCE public.states_id_seq
+    OWNED BY public.states.id;
+
+ALTER SEQUENCE public.states_id_seq
+    OWNER TO myuser;
+
+-- SEQUENCE: public.cities_id_seq
+
+-- DROP SEQUENCE IF EXISTS public.cities_id_seq;
+
+ALTER SEQUENCE public.cities_id_seq
+    OWNED BY public.cities.id;
+
+ALTER SEQUENCE public.cities_id_seq
+    OWNER TO myuser;
+
 -- SEQUENCE: public.customer_user_id_seq
 
 -- DROP SEQUENCE IF EXISTS public.customer_user_id_seq;
