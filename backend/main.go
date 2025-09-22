@@ -20,7 +20,8 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	_ "github.com/lib/pq"
 
-	"dal/operations"
+	"github.com/athryzorian/interactions/backend/internal/dal/datatypes"
+	"github.com/athryzorian/interactions/backend/internal/dal/operations"
 )
 
 const (
@@ -86,7 +87,7 @@ func main() {
 	})
 
 	e.GET("/countries", func(c echo.Context) error {
-		countries, err := operations.ListCountries(db)
+		countries, err := daloperations.ListCountries(db)
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, err)
 		}
