@@ -1,4 +1,4 @@
 .env
 backend/bin/*
-backend/package/*
+backend/pkg/*
 backend/interactions-backend
