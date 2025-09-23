@@ -289,7 +289,7 @@ func countriesHandler(db *sql.DB, c echo.Context) error {
 	noOfCountries := len(countries)
 	log.Println("Number of countries:", noOfCountries)
 
-	return c.JSON(http.StatusOK, struct{ Count string }{Count: fmt.Sprintf("%d", noOfCountries)})
+	return c.JSON(http.StatusOK, countries)
 
 }
 
