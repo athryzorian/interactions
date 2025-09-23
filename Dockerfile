@@ -12,14 +12,15 @@ COPY go.sum .
 RUN go mod download
 
 # Copy everything from this project into the filesystem of the container.
-COPY *.go /app/
-COPY ./dal/ /app/
+COPY *.go .
+COPY . .
 
 # Obtain the package needed to run code. Alternatively use GO modules.
-RUN go get github.com/athryzorian/interactions/dal/operations
+
 
 # Build the Go application.
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /interactions
+#RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /interactions
+RUN go build -o /interactions
 
 
 EXPOSE 8080

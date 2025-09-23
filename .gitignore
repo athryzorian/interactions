@@ -1,4 +1,3 @@
 .env
-backend/bin/*
-backend/pkg/*
-backend/interactions-backend
+bin/*
+pkg/*
