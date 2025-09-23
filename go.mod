@@ -1,13 +1,14 @@
+module github.com/athryzorian/interactions
+
 go 1.23.0
 
 toolchain go1.24.6
-
-module github.com/athryzorian/interactions/backend
 
 require (
 	github.com/cenkalti/backoff/v4 v4.1.0
 	github.com/labstack/echo/v4 v4.3.0
 	github.com/lib/pq v1.10.9
+
 )
 
 require (

@@ -3,7 +3,7 @@ package operations
 import (
 	"database/sql"
 
-	"github.com/athryzorian/interactions/backend/dal/datatypes"
+	"github.com/athryzorian/interactions/dal/datatypes"
 )
 
 func ListCountries(db *sql.DB) ([]datatypes.Country, error) {

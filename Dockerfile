@@ -16,10 +16,7 @@ COPY *.go /app/
 COPY ./dal/ /app/
 
 # Obtain the package needed to run code. Alternatively use GO modules.
-RUN go get -u github.com/lib/pq
-RUN go get github.com/athryzorian/interactions/backend/dal/operations
-RUN go get -u github.com/labstack/echo/v4
-RUN go get -u github.com/labstack/echo/v4/middleware
+RUN go get github.com/athryzorian/interactions/dal/operations
 
 # Build the Go application.
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /interactions

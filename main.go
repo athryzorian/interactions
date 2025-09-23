@@ -20,7 +20,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	_ "github.com/lib/pq"
 
-	"github.com/athryzorian/interactions/backend/dal/operations"
+	"github.com/athryzorian/interactions/dal/operations"
 )
 
 const (
