@@ -12,14 +12,12 @@ COPY go.sum .
 RUN go mod download
 
 # Copy everything from this project into the filesystem of the container.
-COPY *.go .
 COPY . .
 
 # Obtain the package needed to run code. Alternatively use GO modules.
 
-
-# Build the Go application.
-#RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o /interactions
+# Build the Go application with debugging flags
+RUN CGO_ENABLED=0 
 RUN go build -o /interactions
 
 

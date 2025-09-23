@@ -1,0 +1,28 @@
+##
+## Build
+##
+
+FROM golang:1.24.6 AS build
+
+WORKDIR /app
+
+COPY go.mod .
+COPY go.sum .
+
+RUN go mod download
+
+# Copy everything from this project into the filesystem of the container.
+COPY . .
+
+# Obtain the package needed to run code. Alternatively use GO modules.
+
+# Install Delve debugger
+RUN CGO_ENABLED=0 go install -ldflags "-s -w -extldflags '-static'" github.com/go-delve/delve/cmd/dlv@latest
+
+# Build the Go application with debugging flags
+RUN CGO_ENABLED=0 go build -gcflags "all=-N -l" -o /interactions
+
+
+EXPOSE 8080 9080
+
+ENTRYPOINT ["/go/bin/dlv", "--listen=:9080", "--headless=true", "--log=true", "--accept-multiclient", "--api-version=2", "exec", "/interactions" ]

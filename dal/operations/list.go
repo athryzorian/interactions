@@ -2,16 +2,20 @@ package operations
 
 import (
 	"database/sql"
+	"log"
 
 	"github.com/athryzorian/interactions/dal/datatypes"
 )
 
 func ListCountries(db *sql.DB) ([]datatypes.Country, error) {
 
-	rows, err := list(db, "countries")
+	rows, err := db.Query("SELECT * FROM " + "countries")
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
+
+	log.Println("Fetched rows from countries table")
 
 	var countries []datatypes.Country
 
@@ -23,19 +27,9 @@ func ListCountries(db *sql.DB) ([]datatypes.Country, error) {
 		}
 		countries = append(countries, country)
 	}
-	rows.Close()
+
+	log.Println("No of countries fetched:", len(countries))
 
 	return countries, nil
 
-}
-
-func list(db *sql.DB, table string) (*sql.Rows, error) {
-
-	rows, err := db.Query("SELECT * FROM " + table)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	return rows, err
 }

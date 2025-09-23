@@ -86,15 +86,7 @@ func main() {
 	})
 
 	e.GET("/countries", func(c echo.Context) error {
-		countries, err := operations.ListCountries(db)
-		if err != nil {
-			return c.JSON(http.StatusInternalServerError, err)
-		}
-		return c.JSON(http.StatusOK, countries)
-	})
-
-	e.GET("/countries", func(c echo.Context) error {
-		return c.JSON(http.StatusOK, struct{ Status string }{Status: "OK"})
+		return countriesHandler(db, c)
 	})
 
 	e.POST("/send", func(c echo.Context) error {
@@ -285,6 +277,20 @@ func rootHandler(db *sql.DB, c echo.Context) error {
 		return c.HTML(http.StatusInternalServerError, err.Error())
 	}
 	return c.HTML(http.StatusOK, fmt.Sprintf("Hello, Docker! (%d)\n", r))
+}
+
+func countriesHandler(db *sql.DB, c echo.Context) error {
+
+	countries, err := operations.ListCountries(db)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err)
+	}
+
+	noOfCountries := len(countries)
+	log.Println("Number of countries:", noOfCountries)
+
+	return c.JSON(http.StatusOK, struct{ Count string }{Count: fmt.Sprintf("%d", noOfCountries)})
+
 }
 
 func sendHandler(db *sql.DB, c echo.Context) error {
