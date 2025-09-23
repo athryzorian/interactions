@@ -12,10 +12,11 @@ COPY go.sum .
 RUN go mod download
 
 # Copy everything from this project into the filesystem of the container.
-COPY *.go ./ 
+COPY **/*.go .
 
 # Obtain the package needed to run code. Alternatively use GO modules.
 RUN go get -u github.com/lib/pq
+RUN go get -u github.com/athryzorian/interactions/backend
 
 RUN go build -o /interactions
 

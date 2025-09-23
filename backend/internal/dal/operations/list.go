@@ -2,19 +2,21 @@ package operations
 
 import (
 	"database/sql"
+
+	"github.com/athryzorian/interactions/backend/internal/dal/datatypes"
 )
 
-func ListCountries(db *sql.DB) ([]Country, error) {
+func ListCountries(db *sql.DB) ([]datatypes.Country, error) {
 
 	rows, err := list(db, "countries")
 	if err != nil {
 		return nil, err
 	}
 
-	var countries []Country
+	var countries []datatypes.Country
 
 	for rows.Next() {
-		var country Country
+		var country datatypes.Country
 		err := rows.Scan(&country.Id, &country.Name, &country.Abbreviation, &country.CountryCode)
 		if err != nil {
 			return nil, err

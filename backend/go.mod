@@ -2,7 +2,7 @@ go 1.23.0
 
 toolchain go1.24.6
 
-module github.com/athryzorian/interactions
+module backend
 
 require (
 	github.com/cenkalti/backoff/v4 v4.1.0
@@ -43,3 +43,5 @@ require (
 	google.golang.org/grpc v1.74.2 // indirect
 	google.golang.org/protobuf v1.36.7 // indirect
 )
+
+replace github.com/athryzorian/interactions => github.com/athryzorian/interactions/backend latest
