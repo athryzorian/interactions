@@ -17,8 +17,7 @@ COPY . .
 # Obtain the package needed to run code. Alternatively use GO modules.
 
 # Build the Go application with debugging flags
-RUN CGO_ENABLED=0 
-RUN go build -o /interactions
+RUN CGO_ENABLED=0 go build -o /interactions
 
 
 EXPOSE 8080

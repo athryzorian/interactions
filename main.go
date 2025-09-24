@@ -89,6 +89,14 @@ func main() {
 		return countriesHandler(db, c)
 	})
 
+	e.GET("/states", func(c echo.Context) error {
+		return statesHandler(db, c)
+	})
+
+	e.GET("/cities", func(c echo.Context) error {
+		return citiesHandler(db, c)
+	})
+
 	e.POST("/send", func(c echo.Context) error {
 		return sendHandler(db, c)
 	})
@@ -290,6 +298,40 @@ func countriesHandler(db *sql.DB, c echo.Context) error {
 	log.Println("Number of countries:", noOfCountries)
 
 	return c.JSON(http.StatusOK, countries)
+
+}
+
+func statesHandler(db *sql.DB, c echo.Context) error {
+
+	whereClause := fmt.Sprintf("parent_country='%s'", c.QueryParam("country"))
+	log.Println("Where Clause:", whereClause)
+
+	states, err := operations.ListStates(db, whereClause)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err)
+	}
+
+	noOfStates := len(states)
+	log.Println("Number of states:", noOfStates)
+
+	return c.JSON(http.StatusOK, states)
+
+}
+
+func citiesHandler(db *sql.DB, c echo.Context) error {
+
+	whereClause := fmt.Sprintf("parent_state='%s'", c.QueryParam("state"))
+	log.Println("Where Clause:", whereClause)
+
+	cities, err := operations.ListCities(db, whereClause)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err)
+	}
+
+	noOfCities := len(cities)
+	log.Println("Number of cities:", noOfCities)
+
+	return c.JSON(http.StatusOK, cities)
 
 }
 
