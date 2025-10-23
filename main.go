@@ -97,6 +97,14 @@ func main() {
 		return citiesHandler(db, c)
 	})
 
+	e.GET("/localities", func(c echo.Context) error {
+		return localitiesHandler(db, c)
+	})
+
+	e.GET("/professions", func(c echo.Context) error {
+		return professionsHandler(db, c)
+	})
+
 	e.POST("/send", func(c echo.Context) error {
 		return sendHandler(db, c)
 	})
@@ -333,6 +341,36 @@ func citiesHandler(db *sql.DB, c echo.Context) error {
 
 	return c.JSON(http.StatusOK, cities)
 
+}
+
+func localitiesHandler(db *sql.DB, c echo.Context) error {
+
+	whereClause := fmt.Sprintf("parent_city='%s'", c.QueryParam("city"))
+	log.Println("Where Clause:", whereClause)
+
+	localities, err := operations.ListLocalities(db, whereClause)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err)
+	}
+
+	noOfLocalities := len(localities)
+	log.Println("Number of localities:", noOfLocalities)
+
+	return c.JSON(http.StatusOK, localities)
+
+}
+
+func professionsHandler(db *sql.DB, c echo.Context) error {
+
+	professions, err := operations.ListProfessions(db, true)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err)
+	}
+
+	noOfProfessions := len(professions)
+	log.Println("Number of professions:", noOfProfessions)
+
+	return c.JSON(http.StatusOK, professions)
 }
 
 func sendHandler(db *sql.DB, c echo.Context) error {

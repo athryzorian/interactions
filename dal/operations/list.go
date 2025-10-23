@@ -2,6 +2,7 @@ package operations
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 
 	"github.com/athryzorian/interactions/dal/datatypes"
@@ -93,4 +94,66 @@ func ListCities(db *sql.DB, queryFilter string) ([]datatypes.City, error) {
 
 	return cities, nil
 
+}
+
+func ListLocalities(db *sql.DB, queryFilter string) ([]datatypes.Locality, error) {
+
+	queryStatement := "SELECT * FROM " + "localities"
+	queryStatement += " WHERE " + queryFilter
+
+	rows, err := db.Query(queryStatement)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	log.Println("Fetched rows from localities table")
+
+	var localities []datatypes.Locality
+
+	for rows.Next() {
+		var locality datatypes.Locality
+		err := rows.Scan(&locality.Id, &locality.Name, &locality.ParentCity)
+		if err != nil {
+			return nil, err
+		}
+		localities = append(localities, locality)
+	}
+
+	log.Println("No of localities fetched:", len(localities))
+
+	return localities, nil
+
+}
+
+func ListProfessions(db *sql.DB, showAll bool) ([]datatypes.Profession, error) {
+
+	queryStatement := "SELECT * FROM " + "professions"
+
+	if showAll == false {
+		queryStatement += " WHERE " + fmt.Sprintf("%s = true", "is_enabled")
+	}
+
+	rows, err := db.Query(queryStatement)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	log.Println("Fetched rows from professions table")
+
+	var professions []datatypes.Profession
+
+	for rows.Next() {
+		var profession datatypes.Profession
+		err := rows.Scan(&profession.Id, &profession.Name, &profession.Abbreviation, &profession.Logo, &profession.IsEnabled, &profession.Description)
+		if err != nil {
+			return nil, err
+		}
+		professions = append(professions, profession)
+	}
+
+	log.Println("No of professions fetched:", len(professions))
+
+	return professions, nil
 }
